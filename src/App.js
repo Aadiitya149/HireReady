@@ -1,10 +1,12 @@
-import NavbarComponent from "./components/Navbar";
-
+import './App.css';
+import { NavbarComponent } from './components/Navbar';
+import { ClerkProvider } from '@clerk/nextjs';
 function App() {
-  return (
-    <div>
+  return (<ClerkProvider>
+    <div className="App">
       <NavbarComponent />
     </div>
+    </ClerkProvider>
   );
 }
 

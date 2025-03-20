@@ -1,0 +1,26 @@
+import fs from "fs";
+import path from "path";
+
+export default async function handler(req, res) {
+  if (req.method === "POST") {
+    const { answers } = req.body;
+
+    try {
+      const filePath = path.join(process.cwd(), "public", "answers.json");
+      const existingAnswers = fs.existsSync(filePath)
+        ? JSON.parse(fs.readFileSync(filePath, "utf-8"))
+        : [];
+      
+      const updatedAnswers = [...existingAnswers, ...answers];
+      fs.writeFileSync(filePath, JSON.stringify(updatedAnswers, null, 2));
+
+      res.status(200).json({ message: "Answers stored successfully!" });
+    } catch (error) {
+      console.error("Error storing answers:", error);
+      res.status(500).json({ error: "Failed to store interview answers" });
+    }
+  } else {
+    res.setHeader("Allow", ["POST"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+}
