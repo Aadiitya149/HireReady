@@ -1,0 +1,48 @@
+const fs = require('fs').promises;
+const path = require('path');
+
+module.exports = async function handler(req, res) {
+  if (req.method === 'POST') {
+    const { answers } = req.body;
+
+    try {
+      const filePath = path.join(process.cwd(), 'public', 'answers.json');
+      let existingAnswers = [];
+
+      // Attempt to read the existing file
+      try {
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        existingAnswers = JSON.parse(fileContent);
+        // Ensure existingAnswers is an array
+        if (!Array.isArray(existingAnswers)) {
+          throw new Error('Existing answers in answers.json is not an array');
+        }
+      } catch (error) {
+        // If file doesn't exist, start with an empty array; log other errors
+        if (error.code !== 'ENOENT') {
+          console.error('Error reading answers.json:', error);
+        }
+        existingAnswers = [];
+      }
+
+      // Validate that answers from req.body is an array
+      if (!Array.isArray(answers)) {
+        return res.status(400).json({ error: 'Answers must be an array' });
+      }
+
+      // Combine existing answers with new answers
+      const updatedAnswers = [...existingAnswers, ...answers];
+      // Write the updated answers back to the file
+      await fs.writeFile(filePath, JSON.stringify(updatedAnswers, null, 2));
+
+      // Send success response
+      res.status(200).json({ message: 'Answers stored successfully!' });
+    } catch (error) {
+      console.error('Error storing answers:', error);
+      res.status(500).json({ error: 'Failed to store interview answers' });
+    }
+  } else {
+    res.setHeader('Allow', ['POST']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+};
