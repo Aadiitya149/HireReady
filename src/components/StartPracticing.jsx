@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const StartPracticing = () => {
+const StartPracticing = ({ onStart, onBack }) => {
   const [role, setRole] = useState('');
   const [company, setCompany] = useState('');
   const [jd, setJd] = useState('');
   const [file, setFile] = useState(null);
-  const navigate = useNavigate();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -24,7 +22,9 @@ const StartPracticing = () => {
         return;
       }
     }
-    navigate('/mock-interview', { state: { role, company, jd } });
+    if (onStart) {
+      onStart({ role, company, jd });
+    }
   };
 
   return (
@@ -54,6 +54,11 @@ const StartPracticing = () => {
       <button onClick={handleSubmit} className="start-interview-button">
         Start Interview
       </button>
+      {onBack && (
+        <button onClick={onBack} className="back-button">
+          Back
+        </button>
+      )}
     </div>
   );
 };

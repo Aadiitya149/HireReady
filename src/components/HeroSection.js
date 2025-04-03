@@ -7,7 +7,7 @@ import searchIcon from "../assets/search-icon.png";
 import studentIcon from "../assets/student.png";
 import hrIcon from "../assets/hr.png";
 
-const HeroSection = () => {
+const HeroSection = ({ onStartPracticing }) => {
   const bounceAnimation = {
     y: [0, 19, 0],
     transition: {
@@ -39,38 +39,41 @@ const HeroSection = () => {
     },
   ];
 
+  const handleButtonClick = (buttonText) => {
+    if (buttonText === "Start Practicing" && onStartPracticing) {
+      onStartPracticing();
+    }
+    // Add logic for "Find Talent" if needed later
+  };
+
   return (
     <div className="hero-section">
       {cardData.map((card, index) => (
         <motion.div
-        className="card"
-        key={index}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}  // Change y: 1 to y: 0
-        transition={{ duration: 0 }} // Added easing for smoothness
-        whileHover={{ y: -5 }}
-      >
-      
-      
+          className="card"
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0 }}
+          whileHover={{ y: -5 }}
+        >
           <div className="card-content">
             <h1>
-            <Typewriter
-            words={[card.title]}
-            cursor
-            cursorStyle="|"
-            typeSpeed={100}
-            deleteSpeed={50}
-            delaySpeed={2000}
-            loop={1} 
-            />
-
+              <Typewriter
+                words={[card.title]}
+                cursor
+                cursorStyle="|"
+                typeSpeed={100}
+                deleteSpeed={50}
+                delaySpeed={2000}
+                loop={1}
+              />
             </h1>
             <p>{card.description}</p>
-            <button className={card.buttonClass}>
+            <button className={card.buttonClass} onClick={() => handleButtonClick(card.buttonText)}>
               <img src={card.buttonIcon} alt={`${card.buttonText} Icon`} className="btn-icon" />
               {card.buttonText}
             </button>
-            
             <motion.img
               src={card.animatedIcon}
               alt={`${card.title} Icon`}

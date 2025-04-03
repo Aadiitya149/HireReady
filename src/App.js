@@ -2,24 +2,14 @@ import React, { useState } from 'react';
 import './App.css';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
-import HowItWorks from './components/HowItWorks/HowItWorks';
-import OurTeam from './components/OurTeam/OurTeam';
-import PricingPlans from './components/PricePlans/PricingPlans';
+import StartPracticing from './components/StartPracticing';
+import MockInterview from './components/MockInterview';
 import ParticlesBackground from './components/ParticlesBackground';
-import HRDashboard from './components/HRDashboard/HRDashboard';
-import InterviewSetup from './components/InterviewSetup/InterviewSetup';
-import InterviewScreen from './components/InterviewScreen/InterviewScreen';
-import FeedbackScreen from './components/FeedbackScreen/FeedbackScreen';
 
 function App() {
-  const [step, setStep] = useState('landing'); // Tracks current screen: landing, hr, setup, interview, feedback
-  const [interviewConfig, setInterviewConfig] = useState({});
-  const [responses, setResponses] = useState([]);
-
-  const handleHRStart = (config) => {
-    setInterviewConfig(config);
-    setStep('interview');
-  };
+  const [step, setStep] = useState('landing'); // Tracks current screen: landing, setup, interview, feedback
+  const [interviewConfig, setInterviewConfig] = useState({}); // Stores role, company, jd
+  const [responses, setResponses] = useState([]); // Stores questions, answers, scores, feedback
 
   const handleCandidateStart = (config) => {
     setInterviewConfig(config);
@@ -44,18 +34,35 @@ function App() {
         <Navbar onHRClick={() => setStep('hr')} onCandidateClick={() => setStep('setup')} />
 
         {step === 'landing' && (
-          <>
-            <HeroSection />
-            <HowItWorks />
-            <OurTeam />
-            <PricingPlans />
-          </>
+          <HeroSection onStartPracticing={() => setStep('setup')} />
         )}
 
-        {step === 'hr' && <HRDashboard onStart={handleHRStart} onBack={handleBackToLanding} />}
-        {step === 'setup' && <InterviewSetup onStart={handleCandidateStart} onBack={handleBackToLanding} />}
-        {step === 'interview' && <InterviewScreen config={interviewConfig} onFinish={handleFinish} onBack={handleBackToLanding} />}
-        {step === 'feedback' && <FeedbackScreen responses={responses} onBack={handleBackToLanding} />}
+        {step === 'setup' && (
+          <StartPracticing onStart={handleCandidateStart} onBack={handleBackToLanding} />
+        )}
+
+        {step === 'interview' && (
+          <MockInterview config={interviewConfig} onFinish={handleFinish} onBack={handleBackToLanding} />
+        )}
+
+        {step === 'feedback' && (
+          <div className="feedback-screen">
+            <h1>Feedback</h1>
+            {responses.length > 0 ? (
+              responses.map((result, index) => (
+                <div key={index} className="result">
+                  <p><strong>Question:</strong> {result.question}</p>
+                  <p><strong>Your Answer:</strong> {result.answer}</p>
+                  <p><strong>Score:</strong> {result.score}/10</p>
+                  <p><strong>Feedback:</strong> {result.feedback}</p>
+                </div>
+              ))
+            ) : (
+              <p>No responses available.</p>
+            )}
+            <button onClick={handleBackToLanding}>Back to Home</button>
+          </div>
+        )}
       </div>
     </div>
   );
